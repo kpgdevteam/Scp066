@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using PlayerRoles;
-using RoleAPI.API;
-using RoleAPI.API.Configs;
+using RoleAPI.API.Abilities;
+using RoleAPI.API.Roles;
+using RoleAPI.API.Schematics;
 using Scp066.Features.Abilities;
+using SecretLabNAudio.Core;
 using UncomplicatedCustomRoles.API.Enums;
 using UncomplicatedCustomRoles.API.Features;
 using UncomplicatedCustomRoles.API.Features.Behaviour;
@@ -13,7 +15,7 @@ using YamlDotNet.Serialization;
 
 namespace Scp066.Features;
 
-public class Scp066Role : ExtendedRole
+public class Scp066Role : UcrRoleBase
 {
     [YamlIgnore] public override int Id { get; set; } = 066;
     [YamlIgnore] public override string Name { get; set; } = "SCP-066";
@@ -90,45 +92,6 @@ public class Scp066Role : ExtendedRole
         SpawnRoles = [RoleTypeId.Scp173]
     };
 
-    public override SchematicConfig SchematicConfig { get; set; } = new()
-    {
-        SchematicName = "Scp066",
-        Offset = new Vector3(0f, -1f, 0f),
-        Rotation = new Vector3(0f, 90f, 0f)
-    };
-
-    public override HintConfig HintConfig { get; set; } = new()
-    {
-        Text = "<align=right><size=50><color=red><b>SCP-066</b></color></size>\n" +
-               "<size=30><color=red>Eric's Toy play sounds</color></size>\n\n" +
-               "Abilities:\n" +
-               "<color=%color%>\ud83c\udfb5 Eric? {0}</color>\n" +
-               "<color=%color%>\ud83c\udfb6 Note {1}</color>\n" +
-               "<color=%color%>\ud83c\udfba Noise {2}</color>\n" +
-               "\n<size=18>if you cant use abilities\nremove \u2b50 in settings</size></align>",
-        AvailableAbilityColor = "red",
-        UnavailableAbilityColor = "#880000"
-    };
-
-    public override AudioConfig AudioConfig { get; set; } = new()
-    {
-        Name = "scp066",
-        Volume = 100,
-        IsSpatial = true,
-        MinDistance = 5f,
-        MaxDistance = 5f
-    };
-
-    public override AbilityConfig AbilityConfig { get; set; } = new()
-    {
-        AbilityTypes =
-        [
-            typeof(PlayEric),
-            typeof(PlayNotes),
-            typeof(PlayNoise)
-        ]
-    };
-
     public override void OnSpawned(SummonedCustomRole role)
     {
         role.AddModule(
@@ -137,4 +100,27 @@ public class Scp066Role : ExtendedRole
         );
         base.OnSpawned(role);
     }
+
+    public override SpeakerSettings? DefaultSpeakerSettings { get; } = new SpeakerSettings
+    {
+        Volume = 1,
+        IsSpatial = true,
+        MinDistance = 5f,
+        MaxDistance = 5f
+    };
+    
+    public override RoleSchematic Schematic { get; } = new()
+    {
+        Name = "Scp066",
+        PositionOffset = new Vector3(0f, -1f, 0f),
+        RotationOffset = new Vector3(0f, 90f, 0f),
+        HideCarrierModel = true
+    };
+
+    public override IReadOnlyList<AbilityBase> Abilities { get; } = new List<AbilityBase>
+    {
+        new PlayEric(),
+        new PlayNotes(),
+        new PlayNoise()
+    };
 }

@@ -40,11 +40,14 @@
         <Reference Include="System.Core"/>
         <Reference Include="System.Data"/>
         <Reference Include="System.Xml"/>
+        <Reference Include="System.IO.Compression"/>
+        <Reference Include="System.IO.Compression.FileSystem"/>
+        <Reference Include="System.Net.Http"/>
         <Reference Include="UncomplicatedCustomRoles" HintPath="$(LABAPI_PLUGINS)\UncomplicatedCustomRoles-LabAPI.dll"/>
-        <Reference Include="RoleAPI" HintPath="$(LABAPI_DEPENDENCIES)\RoleAPI.dll"/>
-        <Reference Include="AudioPlayerApi" HintPath="$(LABAPI_DEPENDENCIES)\AudioPlayerApi.dll"/>
+        <Reference Include="RoleAPI" HintPath="$(LABAPI_PLUGINS)\RoleAPI.dll"/>
+        <Reference Include="SecretLabNAudio.Core" HintPath="$(LABAPI_PLUGINS)\SecretLabNAudio.Core.dll"/>
         <Reference Include="LabApi" HintPath="$(SL_REFERENCES)\LabApi.dll"/>
-        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp-Publicized.dll"/>
+        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll"/>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll"/>
         <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll"/>
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll"/>
@@ -59,6 +62,7 @@
         <Compile Include="ApiFeatures\LogManager.cs"/>
         <Compile Include="Config.cs"/>
         <Compile Include="EventHandler.cs"/>
+        <Compile Include="Features\AudioSetup.cs"/>
         <Compile Include="Features\Abilities\PlayEric.cs"/>
         <Compile Include="Features\Abilities\PlayNoise.cs"/>
         <Compile Include="Features\Abilities\PlayNotes.cs"/>
@@ -69,7 +73,7 @@
     <ItemGroup>
         <PackageReference Include="Lib.Harmony" Version="2.4.2"/>
         <PackageReference Include="System.Net.Http" Version="4.3.4"/>
-        <PackageReference Include="System.Text.Json" Version="10.0.2"/>
+        <PackageReference Include="System.Text.Json" Version="10.0.5"/>
         <PackageReference Include="YamlDotNet" Version="11.0.1"/>
     </ItemGroup>
     <ItemGroup>

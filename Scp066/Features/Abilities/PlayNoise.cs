@@ -1,73 +1,54 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LabApi.Features.Wrappers;
+using LabApi.Loader.Features.Paths;
 using MEC;
 using PlayerRoles;
 using PlayerStatsSystem;
-using RoleAPI.API.Interfaces;
-using RoleAPI.API.Managers;
-using Scp066.ApiFeatures;
+using RoleAPI.API.Abilities;
 using UnityEngine;
 
 namespace Scp066.Features.Abilities;
 
-public class PlayNoise : Ability
+public class PlayNoise : AbilityBase
 {
     public override string Name => "\ud83c\udfba Noise";
-    public override string Description => "Plays Symphony, which kills players";
-    public override int KeyId => 662;
-    public override KeyCode KeyCode => KeyCode.F;
+    public override string Description => "Plays Beethoven, which kills players";
+    public override KeyCode DefaultKey => KeyCode.F;
     public override float Cooldown => 40f;
+    public override string SoundFile => Path.Combine(PathManager.Configs.FullName, "Scp066", "Beethoven.ogg");
 
-    protected override void ActivateAbility(Player player, ObjectManager manager)
+    protected override void OnExecute(AbilityExecutionContext context)
     {
-        if (manager.AudioPlayer is null)
-            return;
+        var damage = Scp066.Singleton.Config.Damage;
+        var maxDistance = Scp066.Singleton.Config.MaxDistance;
 
-        if (!AudioClipStorage.AudioClips.ContainsKey("Beethoven"))
+        if (maxDistance <= 0 || damage <= 0)
         {
-            LogManager.Error(
-                "[Scp066] The audio file 'Beethoven.ogg' was not found for playback. Please ensure the file is placed in the correct directory.");
+            context.Deny("Invalid distance or damage configuration.");
             return;
         }
-
-        manager.AudioPlayer.AddClip("Beethoven", 0.5f);
-        Timing.RunCoroutine(CheckEndOfPlayback(player, manager));
+        context.LocksDuringExecution = true;
+        Timing.RunCoroutine(DamageLoop(context, maxDistance, damage, Scp066.Singleton.Config.CustomDeathText));
     }
 
-    private static IEnumerator<float> CheckEndOfPlayback(Player scp066, ObjectManager manager)
+    private static IEnumerator<float> DamageLoop(AbilityExecutionContext context, float maxDistance, float damage,
+        string damageText)
     {
-        if (Scp066.Singleton.Config == null) yield break;
-        var distance = Scp066.Singleton.Config.Scp066Role.AudioConfig.MaxDistance;
-        var damage = Scp066.Singleton.Config.Damage;
-        var damageText = Scp066.Singleton.Config.CustomDeathText;
+        // Brief wait for audio to start
+        yield return Timing.WaitForSeconds(0.2f);
 
-        if (distance <= 0 || damage <= 0)
-            yield break;
-
-        const float maxWaitForStart = 2f;
-        var waited = 0f;
-
-        // This is a test cycle in case the sound doesn't work.
-        while (manager.AudioPlayer.ClipsById.Values.Any(clip => clip.Clip != "Beethoven"))
+        var elapsed = 0f;
+        while (elapsed < 25f)
         {
-            if (waited > maxWaitForStart) yield break;
+            foreach (var p in Player.ReadyList.Where(p =>
+                         Vector3.Distance(context.Player.Position, p.Position) <= maxDistance && !p.IsSCP &&
+                         p.IsAlive && p.Team != Team.OtherAlive))
+                p.Damage(new CustomReasonDamageHandler(damageText, damage));
 
-            yield return Timing.WaitForSeconds(0.1f);
-            waited += 0.1f;
-        }
-
-
-        // While the symphony is running
-        while (manager.AudioPlayer.ClipsById.Values.Any(clip => clip.Clip == "Beethoven"))
-        {
-            // Deal damage to players near SCP-066
-            foreach (var player in Player.ReadyList.Where(player =>
-                         Vector3.Distance(scp066.Position, player.Position) <= distance && !player.IsSCP &&
-                         player.IsAlive && player.Team != Team.OtherAlive))
-                player.Damage(new CustomReasonDamageHandler(damageText, damage));
-
-            yield return Timing.WaitForSeconds(0.5f);
+            yield return Timing.WaitForSeconds(1f);
+            elapsed += 1f;
         }
     }
 }

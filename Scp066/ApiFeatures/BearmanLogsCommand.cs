@@ -4,11 +4,11 @@ using CommandSystem;
 namespace Scp066.ApiFeatures;
 
 [CommandHandler(typeof(GameConsoleCommandHandler))]
-public class BearmanLogs066 : ICommand
+public class BearmanLogs999 : ICommand
 {
-    public string Command => "bearmanlogs066";
+    public string Command => "bearmanlogs999";
 
-    public string[] Aliases { get; } = ["bmlogs066"];
+    public string[] Aliases { get; } = ["bmlogs999"];
 
     public string Description => "Sends collected plugin logs to the log server and returns the log id.";
 

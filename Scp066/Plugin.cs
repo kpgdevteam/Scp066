@@ -2,8 +2,8 @@
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
 using LabApi.Loader.Features.Plugins;
-using RoleAPI;
 using Scp066.Features;
+using UncomplicatedCustomRoles.API.Features;
 
 namespace Scp066;
 
@@ -17,7 +17,7 @@ public class Scp066 : Plugin<Config>
         "Adds SCP-066, the noise maker, as a custom role with unique abilities and features.";
 
     public override string Author => "RisottoMan, LabApi version: MedveMarci";
-    public override Version Version => new(1, 1, 3);
+    public override Version Version => new(1, 2, 0);
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
     public static Scp066 Singleton { get; private set; }
     private Scp066Role Role { get; set; }
@@ -25,9 +25,9 @@ public class Scp066 : Plugin<Config>
     public override void Enable()
     {
         Singleton = this;
-        Startup.SetupAPI(Name);
-        Startup.RegisterCustomRole(Role);
+        RoleAPI.RoleAPI.RegisterRole(Role);
         CustomHandlersManager.RegisterEventsHandler(_eventHandler);
+        AudioSetup.EnsureAudioFiles();
     }
 
     public override void LoadConfigs()
@@ -39,7 +39,7 @@ public class Scp066 : Plugin<Config>
     public override void Disable()
     {
         Singleton = null;
-        Startup.UnRegisterCustomRole(Role);
         CustomHandlersManager.UnregisterEventsHandler(_eventHandler);
+        RoleAPI.RoleAPI.UnregisterRole(Role);
     }
 }

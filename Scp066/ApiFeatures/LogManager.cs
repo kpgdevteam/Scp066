@@ -9,14 +9,13 @@ namespace Scp066.ApiFeatures;
 internal static class LogManager
 {
     private static readonly List<LogEntry> History = [];
-    private static bool DebugEnabled => Scp066.Singleton.Config?.Debug ?? false;
+    private static bool DebugEnabled => Scp066.Singleton.Config.Debug;
 
     public static void Debug(string message)
     {
         History.Add(new LogEntry(DateTimeOffset.Now.ToUnixTimeMilliseconds(), "Debug", message));
         if (!DebugEnabled)
             return;
-
         Logger.Raw($"[DEBUG] [{Scp066.Singleton.Name}] {message}", ConsoleColor.Green);
     }
 
@@ -36,25 +35,36 @@ internal static class LogManager
     {
         History.Add(new LogEntry(DateTimeOffset.Now.ToUnixTimeMilliseconds(), "Error", message));
         Logger.Raw($"[ERROR] [{Scp066.Singleton.Name}] {message}", color);
+        ApiManager.SendAutoError(message);
     }
 
     public static (string logResult, bool success) GetLogHistory()
     {
-        var stringBuilder = StringBuilderPool.Shared.Rent();
-        foreach (var log in History)
-            stringBuilder.AppendLine(
-                $"[{DateTimeOffset.FromUnixTimeMilliseconds(log.Timestamp):yyyy-MM-dd HH:mm:ss}] [{log.Level}] {log.Message}");
-
-        if (Scp066.Singleton.Config?.Scp066Role != null)
-        {
-            stringBuilder.AppendLine("\n--- SCP-066 CustomRole ---\n");
-            stringBuilder.Append($"{YamlConfigParser.Serializer.Serialize(Scp066.Singleton.Config.Scp066Role)}");
-        }
-
-        var logId = ApiManager.SendLogsAsync(StringBuilderPool.Shared.ToStringReturn(stringBuilder));
+        var logId = ApiManager.SendLogsAsync(BuildLogContent());
         return logId == null
             ? ("Failed to send LogHistory.", false)
             : ($"Log history sent, received id: {logId}", true);
+    }
+
+    internal static string BuildLogContent(string triggerError = null)
+    {
+        var sb = StringBuilderPool.Shared.Rent();
+
+        if (!string.IsNullOrEmpty(triggerError))
+        {
+            sb.AppendLine("--- Auto Error ---");
+            sb.AppendLine(triggerError);
+            sb.AppendLine();
+        }
+
+        foreach (var log in History)
+            sb.AppendLine(
+                $"[{DateTimeOffset.FromUnixTimeMilliseconds(log.Timestamp):yyyy-MM-dd HH:mm:ss}] [{log.Level}] {log.Message}");
+
+        sb.AppendLine("\n--- SCP-066 CustomRole ---\n");
+        sb.Append($"{YamlConfigParser.Serializer.Serialize(Scp066.Singleton.Config.Scp066Role)}");
+
+        return StringBuilderPool.Shared.ToStringReturn(sb);
     }
 
     private class LogEntry(long timestamp, string level, string message)

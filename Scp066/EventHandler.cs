@@ -11,6 +11,8 @@ public class EventHandler : CustomEventsHandler
     {
         if (ev.Player.TryGetSummonedInstance(out var role) && role.Role.Id == 066)
             ev.IsAllowed = false;
+
+        base.OnScp0492StartingConsumingCorpse(ev);
     }
 
     public override void OnServerWaitingForPlayers()

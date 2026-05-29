@@ -19,14 +19,23 @@
   <img src="https://github.com/MedveMarci/SCP-066/blob/main/Photos/Noise.png" alt="SCP-066 - `Abilities`">
 </p>
 
+# Dependencies
+
+| Dependency                                                                      | Required | Description                     |
+|---------------------------------------------------------------------------------|----------|---------------------------------|
+| [RoleAPI](https://github.com/MedveMarci/RoleAPI/releases/latest)                | Yes      | Custom role and ability support |
+
 # Installation
 
-- ``Scp066.dll`` move to => ``~\LabAPI\plugins\global``
-- ``Audio.tar.gz`` unarchive to => ``~\LabAPI\configs\scp066\Audio``
-- ``Schematics.tar.gz`` unarchive to => ``~\LabAPI\configs\ProjectMER\Schematics``
-- ``dependencies.zip`` unarchive to => ``~\LabAPI\dependencies\global``
-- Install the [``ProjectMER.dll``](https://github.com/Michal78900/ProjectMER/releases/latest) to =>
-  ``~\LabAPI\plugins\global``
+1. Download the [latest release](https://github.com/MedveMarci/SCP-999/releases/latest):
+   - `Scp066.dll`
+   - `Audio.tar.gz`
+   - `Schematics.tar.gz`
+2. Place `Scp066.dll` in `LabAPI/plugins/global/`
+3. Extract `Audio.tar.gz` to `LabAPI/configs/Scp066/Audio/`
+4. Extract `Schematics.tar.gz` to `LabAPI/configs/ProjectMER/Schematics/`
+5. Install the required dependencies listed above
+  - If you're using the RueI version of RoleAPI, you need to install Scp066-RueI.dll instead of the normal one.
 
 # Commands
 
@@ -36,7 +45,7 @@
 
 # Credits
 
-![img](https://img.shields.io/github/downloads/MedveMarci/SCP-066/total.svg) <a href="https://github.com/KenleyundLeon/DeltaPatch"><img src="https://image2url.com/images/1759565889245-ff2e02c2-1f19-4f72-bc06-43a3b77fb4bd.png"></a>
+![img](https://img.shields.io/github/downloads/MedveMarci/SCP-999/total.svg) <a href="https://github.com/KenleyundLeon/DeltaPatch"><img src="https://image2url.com/images/1759565889245-ff2e02c2-1f19-4f72-bc06-43a3b77fb4bd.png"></a>
 
 - The [main plugin](https://github.com/RisottoMan/SCP-066) created by ``RisottoMan``
 - LabAPI support by ``MedveMarci``

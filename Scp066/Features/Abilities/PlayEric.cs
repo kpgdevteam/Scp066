@@ -11,7 +11,7 @@ namespace Scp066.Features.Abilities;
 
 public class PlayEric : ServerSpecificSettingAbility<PlayEricInstance>
 {
-    public override string Name => "🎵 Eric?";
+    public override string Name => "SCP-066 🎵 Eric?";
     public override string Description => "Play back random sound 'eric?'";
     public override string Id => "play_eric";
     protected override double Cooldown => 10;
@@ -30,9 +30,8 @@ public class PlayEricInstance : AbilityInstanceBase
             return false;
 
         var value = Random.Range(0, 3) + 1;
-        var soundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", $"eric{value}.ogg");
         ap.ClearBuffer();
-        ap.EnqueueFileSafe(soundFile, 1f);
+        ap.UseShortClip($"eric{value}");
         return true;
     }
 }

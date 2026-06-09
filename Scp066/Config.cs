@@ -1,8 +1,7 @@
-namespace Scp066;
+﻿namespace Scp066;
 
 public class Config
 {
-    public bool Debug { get; set; } = false;
     public float Damage { get; set; } = 8f;
     public float MaxDistance { get; set; } = 8f;
 
@@ -15,4 +14,6 @@ public class Config
         "Use abilities by clicking on the buttons</color>";
 
     public float SpawnBroadcastDuration { get; set; } = 10f;
+
+    public string ShortClipsPath { get; set; } = "Audio/";
 }

@@ -1,9 +1,14 @@
 using System;
+using System.IO;
 using CustomAbilityLib.API;
 using CustomRoleLib.API;
 using LabApi.Features;
+using LabApi.Loader;
+using LabApi.Loader.Features.Paths;
 using LabApi.Loader.Features.Plugins;
 using Scp066.Features;
+using SecretLabNAudio.Core.FileReading;
+using SecretLabNAudio.FFmpeg.Extensions;
 
 namespace Scp066;
 
@@ -29,7 +34,8 @@ public class Scp066Plugin : Plugin<Config>
         CustomSpawnManager.SetGroupMaxTokens(RoleNamespaceKey, 1);
         CustomSpawnManager.SetGroupTokenReset(RoleNamespaceKey, CustomSpawnManager.TokenResetType.RoundRestart);
 
-        AudioSetup.EnsureAudioFiles();
+        var cachePath = Path.Combine(this.GetConfigDirectory().FullName, Config.ShortClipsPath);
+        ShortClipCache.AddAllFromDirectoryWithFFmpeg(cachePath);
     }
 
     public override void Disable()

@@ -15,7 +15,7 @@ namespace Scp066.Features.Abilities;
 
 public class PlayNoise : ServerSpecificSettingAbility<PlayNoiseInstance>
 {
-    public override string Name => "🎺 Noise";
+    public override string Name => "SCP-066 🎺 Noise";
     public override string Description => "Plays a symphony that kills nearby humans";
     public override string Id => "play_noise";
     protected override double Cooldown => 40;
@@ -48,9 +48,8 @@ public class PlayNoiseInstance : AbilityInstanceBase
         if (!Scp066AudioComponent.PlayerAudioPlayers.TryGetValue(Owner, out var ap))
             return false;
 
-        var soundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", "symphony.ogg");
         ap.ClearBuffer();
-        ap.EnqueueFileSafe(soundFile, 1f);
+        ap.UseShortClip("symphony");
 
         if (_damageCoroutine.IsRunning)
             Timing.KillCoroutines(_damageCoroutine);

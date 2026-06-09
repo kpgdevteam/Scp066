@@ -11,7 +11,7 @@ namespace Scp066.Features.Abilities;
 
 public class PlayNotes : ServerSpecificSettingAbility<PlayNotesInstance>
 {
-    public override string Name => "🎶 Note";
+    public override string Name => "SCP-066 🎶 Note";
     public override string Description => "Play back random creepy notes";
     public override string Id => "play_notes";
     protected override double Cooldown => 10;
@@ -30,9 +30,8 @@ public class PlayNotesInstance : AbilityInstanceBase
             return false;
 
         var value = Random.Range(0, 6) + 1;
-        var soundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", $"Notes{value}.ogg");
         ap.ClearBuffer();
-        ap.EnqueueFileSafe(soundFile, 1f);
+        ap.UseShortClip($"Notes{value}");
         return true;
     }
 }

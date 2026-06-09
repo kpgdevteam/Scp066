@@ -8,7 +8,7 @@ namespace Scp066.Features;
 
 public class Scp066AudioComponent : ComponentBase<Scp066RoleInstance>
 {
-    private const float Volume = 1f;
+    private const float Volume = 6f;
     private static readonly Vector3 PositionOffset = Vector3.zero;
 
     public static readonly Dictionary<Player, AudioPlayer> PlayerAudioPlayers = new();

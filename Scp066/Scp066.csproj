@@ -29,6 +29,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all"/>
         <PackageReference Include="Lib.Harmony" Version="2.2.2" />
         <PackageReference Include="Northwood.LabAPI" Version="1.1.6.1"/>
         <PackageReference Include="SecretLabNAudio.Core" Version="2.1.0" />
@@ -38,17 +39,38 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Reference Include="Assembly-CSharp">
+          <HintPath>..\..\depo\Assembly-CSharp.dll</HintPath>
+          <Publicize>true</Publicize>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+          <HintPath>..\..\depo\Assembly-CSharp-firstpass.dll</HintPath>
+        </Reference>
+        <Reference Include="CBCR-Api">
+          <HintPath>..\..\..\Downloads\CBCR-Api_RaCustomMenu.dll</HintPath>
+        </Reference>
+        <Reference Include="CommandSystem.Core">
+          <HintPath>..\..\depo\CommandSystem.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Mirror">
+          <HintPath>..\..\depo\Mirror.dll</HintPath>
+        </Reference>
+        <Reference Include="NorthwoodLib">
+          <HintPath>..\..\depo\NorthwoodLib.dll</HintPath>
+        </Reference>
+        <Reference Include="ProjectMER">
+          <HintPath>..\..\..\Downloads\ProjectMER.dll</HintPath>
+        </Reference>
         <Reference Include="System.IO.Compression" />
-        <Reference Include="UncomplicatedCustomRoles" HintPath="$(LABAPI_PLUGINS)\UncomplicatedCustomRoles.dll"/>
-        <Reference Include="RoleAPI" HintPath="$(LABAPI_PLUGINS)\RoleAPI.dll"/>
-        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll"/>
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll"/>
-        <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll"/>
-        <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll"/>
-        <Reference Include="UnityEngine.AnimationModule" HintPath="$(SL_REFERENCES)\UnityEngine.AnimationModule.dll"/>
-        <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll"/>
-        <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll"/>
-        <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll"/>
+        <Reference Include="UnityEngine.AnimationModule">
+          <HintPath>..\..\depo\UnityEngine.AnimationModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+          <HintPath>..\..\depo\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+          <HintPath>..\..\depo\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
@@ -56,9 +78,5 @@
         <Content Include="../README.md" Link="README.md"/>
         <Content Include="../CHANGELOG.md" Link="CHANGELOG.md"/>
     </ItemGroup>
-
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;$(LABAPI_PLUGINS)&quot; /y"/>
-    </Target>
 
 </Project>

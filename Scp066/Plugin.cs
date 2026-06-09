@@ -1,45 +1,41 @@
-﻿using System;
-using LabApi.Events.CustomHandlers;
+using System;
+using CustomAbilityLib.API;
+using CustomRoleLib.API;
 using LabApi.Features;
 using LabApi.Loader.Features.Plugins;
 using Scp066.Features;
-using UncomplicatedCustomRoles.API.Features;
 
 namespace Scp066;
 
-public class Scp066 : Plugin<Config>
+public class Scp066Plugin : Plugin<Config>
 {
-    private readonly EventHandler _eventHandler = new();
-    public string githubRepo = "MedveMarci/Scp066";
     public override string Name => "Scp066";
-
     public override string Description =>
         "Adds SCP-066, the noise maker, as a custom role with unique abilities and features.";
-
     public override string Author => "RisottoMan, LabApi version: MedveMarci";
-    public override Version Version => new(1, 2, 0);
+    public override Version Version => new(1, 3, 0);
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
-    public static Scp066 Singleton { get; private set; }
-    private Scp066Role Role { get; set; }
+
+    public static Scp066Plugin Singleton { get; private set; }
+
+    private const string RoleNamespaceKey = "scp066:scp066";
 
     public override void Enable()
     {
         Singleton = this;
-        RoleAPI.RoleAPI.RegisterRole(Role);
-        CustomHandlersManager.RegisterEventsHandler(_eventHandler);
-        AudioSetup.EnsureAudioFiles();
-    }
+        CustomRoleManager.RegisterAllRoles(typeof(Scp066Role).Assembly);
+        CustomAbilityManager.RegisterAllAbilities(typeof(Scp066Role).Assembly);
 
-    public override void LoadConfigs()
-    {
-        base.LoadConfigs();
-        Role = Config.Scp066Role;
+        CustomSpawnManager.SetGroupMaxTokens(RoleNamespaceKey, 1);
+        CustomSpawnManager.SetGroupTokenReset(RoleNamespaceKey, CustomSpawnManager.TokenResetType.RoundRestart);
+
+        AudioSetup.EnsureAudioFiles();
     }
 
     public override void Disable()
     {
+        CustomAbilityManager.UnregisterAllAbilities(typeof(Scp066Role).Assembly);
+        CustomRoleManager.UnregisterAllRoles(typeof(Scp066Role).Assembly);
         Singleton = null;
-        CustomHandlersManager.UnregisterEventsHandler(_eventHandler);
-        RoleAPI.RoleAPI.UnregisterRole(Role);
     }
 }

@@ -1,21 +1,38 @@
 using System.IO;
+using CustomAbilityLib.API;
+using CustomRoleLib.API;
+using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Paths;
-using RoleAPI.API.Abilities;
+using SecretLabNAudio.Core.Extensions;
+using Scp066.Features;
 using UnityEngine;
 
 namespace Scp066.Features.Abilities;
 
-public class PlayEric : AbilityBase
+public class PlayEric : ServerSpecificSettingAbility<PlayEricInstance>
 {
-    public override string Name => "\ud83c\udfb5 Eric?";
+    public override string Name => "🎵 Eric?";
     public override string Description => "Play back random sound 'eric?'";
-    public override KeyCode DefaultKey => KeyCode.Q;
-    public override float Cooldown => 10f;
+    public override string Id => "play_eric";
+    protected override double Cooldown => 10;
+    protected override KeyCode SuggestedKey => KeyCode.Q;
+}
 
-    protected override void OnExecute(AbilityExecutionContext context)
+public class PlayEricInstance : AbilityInstanceBase
+{
+    public override void Create(Player player) { }
+    public override void Destroy() { }
+
+    public override bool Execute(out string response)
     {
-        context.LocksDuringExecution  = true;
+        response = null;
+        if (!Scp066AudioComponent.PlayerAudioPlayers.TryGetValue(Owner, out var ap))
+            return false;
+
         var value = Random.Range(0, 3) + 1;
-        context.SoundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", $"Eric{value}.ogg");
+        var soundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", $"eric{value}.ogg");
+        ap.ClearBuffer();
+        ap.EnqueueFileSafe(soundFile, 1f);
+        return true;
     }
 }

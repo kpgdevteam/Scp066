@@ -1,5 +1,3 @@
-﻿using Scp066.Features;
-
 namespace Scp066;
 
 public class Config
@@ -11,5 +9,10 @@ public class Config
     public string CustomDeathText { get; set; } =
         "<color=red>The subject expired after exposure to a loud sound by SCP-066</color>";
 
-    public Scp066Role Scp066Role { get; set; } = new();
+    public string SpawnBroadcast { get; set; } =
+        "<color=red>🎵 You are SCP-066 - Eric's Toy 🎵\n" +
+        "Play sounds to kill humans\n" +
+        "Use abilities by clicking on the buttons</color>";
+
+    public float SpawnBroadcastDuration { get; set; } = 10f;
 }

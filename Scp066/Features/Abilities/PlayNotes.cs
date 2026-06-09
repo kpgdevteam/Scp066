@@ -1,21 +1,38 @@
 using System.IO;
+using CustomAbilityLib.API;
+using CustomRoleLib.API;
+using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Paths;
-using RoleAPI.API.Abilities;
+using SecretLabNAudio.Core.Extensions;
+using Scp066.Features;
 using UnityEngine;
 
 namespace Scp066.Features.Abilities;
 
-public class PlayNotes : AbilityBase
+public class PlayNotes : ServerSpecificSettingAbility<PlayNotesInstance>
 {
-    public override string Name => "\ud83c\udfb6 Note";
+    public override string Name => "🎶 Note";
     public override string Description => "Play back random creepy notes";
-    public override KeyCode DefaultKey => KeyCode.R;
-    public override float Cooldown => 10f;
-    
-    protected override void OnExecute(AbilityExecutionContext context)
+    public override string Id => "play_notes";
+    protected override double Cooldown => 10;
+    protected override KeyCode SuggestedKey => KeyCode.R;
+}
+
+public class PlayNotesInstance : AbilityInstanceBase
+{
+    public override void Create(Player player) { }
+    public override void Destroy() { }
+
+    public override bool Execute(out string response)
     {
-        context.LocksDuringExecution  = true;
+        response = null;
+        if (!Scp066AudioComponent.PlayerAudioPlayers.TryGetValue(Owner, out var ap))
+            return false;
+
         var value = Random.Range(0, 6) + 1;
-        context.SoundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", $"Notes{value}.ogg");
+        var soundFile = Path.Combine(PathManager.Configs.FullName, "Scp066", $"Notes{value}.ogg");
+        ap.ClearBuffer();
+        ap.EnqueueFileSafe(soundFile, 1f);
+        return true;
     }
 }

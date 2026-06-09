@@ -7,8 +7,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using LabApi.Features.Console;
 using LabApi.Loader.Features.Paths;
-using Scp066.ApiFeatures;
 
 namespace Scp066.Features;
 
@@ -44,16 +44,16 @@ internal static class AudioSetup
 
                 if (missing.Length == 0)
                 {
-                    LogManager.Debug("Scp066 audio: all files present.");
+                    Logger.Debug("Scp066 audio: all files present.");
                     return;
                 }
 
-                LogManager.Info($"Scp066 audio: {missing.Length} file(s) missing — downloading.");
+                Logger.Info($"Scp066 audio: {missing.Length} file(s) missing — downloading.");
                 DownloadAndExtract(audioDir, missing);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"Scp066 audio setup failed: {ex.Message}");
+                Logger.Error($"Scp066 audio setup failed: {ex.Message}");
             }
         });
     }
@@ -79,7 +79,7 @@ internal static class AudioSetup
 
         // Rename to correct casing
         Directory.Move(existing, expectedPath);
-        LogManager.Info($"Scp066 audio: renamed '{Path.GetFileName(existing)}' → '{FolderName}'.");
+        Logger.Info($"Scp066 audio: renamed '{Path.GetFileName(existing)}' → '{FolderName}'.");
         return expectedPath;
     }
 
@@ -88,11 +88,11 @@ internal static class AudioSetup
         var downloadUrl = GetLatestAssetUrl();
         if (downloadUrl == null)
         {
-            LogManager.Error("Scp066 audio: could not find download URL from GitHub releases.");
+            Logger.Error("Scp066 audio: could not find download URL from GitHub releases.");
             return;
         }
 
-        LogManager.Info($"Scp066 audio: downloading {ZipAssetName}...");
+        Logger.Info($"Scp066 audio: downloading {ZipAssetName}...");
 
         byte[] zipBytes;
         using (var client = new WebClient())
@@ -117,7 +117,7 @@ internal static class AudioSetup
 
             var dest = Path.Combine(targetDir, name);
             entry.ExtractToFile(dest, overwrite: true);
-            LogManager.Info($"Scp066 audio: extracted '{name}'.");
+            Logger.Info($"Scp066 audio: extracted '{name}'.");
         }
     }
 
@@ -151,7 +151,7 @@ internal static class AudioSetup
         }
         catch (Exception ex)
         {
-            LogManager.Error($"Scp066 audio: GitHub API error — {ex.Message}");
+            Logger.Error($"Scp066 audio: GitHub API error — {ex.Message}");
             return null;
         }
     }

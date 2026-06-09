@@ -2,14 +2,18 @@ using System.Collections.Generic;
 using System.IO;
 using CustomAbilityLib.API;
 using CustomRoleLib.API;
+using DrawableLine;
+using InventorySystem.Items.ThrowableProjectiles;
 using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Paths;
 using MEC;
+using NorthwoodLib.Pools;
 using PlayerRoles;
 using PlayerStatsSystem;
 using SecretLabNAudio.Core.Extensions;
 using Scp066.Features;
 using UnityEngine;
+using Logger = LabApi.Features.Console.Logger;
 
 namespace Scp066.Features.Abilities;
 
@@ -24,6 +28,12 @@ public class PlayNoise : ServerSpecificSettingAbility<PlayNoiseInstance>
 
 public class PlayNoiseInstance : AbilityInstanceBase
 {
+    private static readonly CachedLayerMask DamageTargets = new(
+        "Hitbox"
+    );
+
+    private static readonly Collider[] SpherecastBuffer = new Collider[512];
+
     private CoroutineHandle _damageCoroutine;
 
     public override void Create(Player player) { }
@@ -58,22 +68,47 @@ public class PlayNoiseInstance : AbilityInstanceBase
         return true;
     }
 
-    private IEnumerator<float> DamageLoop(float maxDistance, float damage, string damageText)
+    private IEnumerator<float> DamageLoop(float maxRadius, float damage, string damageText)
     {
+        var damageHandler = new CustomReasonDamageHandler(damageText, damage);
+
         yield return Timing.WaitForSeconds(0.2f);
 
+        var handledNetIds = HashSetPool<uint>.Shared.Rent();
         var elapsed = 0f;
         while (elapsed < 25f && Owner != null)
         {
-            foreach (var p in Player.ReadyList)
+            var position = Owner.Position;
+            var hits = Physics.OverlapSphereNonAlloc(position, maxRadius, SpherecastBuffer, DamageTargets);
+            for (var i = 0; i < hits; i++)
             {
-                if (p.IsSCP || !p.IsAlive || p.Team == Team.OtherAlive) continue;
-                if (Vector3.Distance(Owner.Position, p.Position) <= maxDistance)
-                    p.Damage(new CustomReasonDamageHandler(damageText, damage));
+                var collider = SpherecastBuffer[i];
+                if (!collider.TryGetComponent<HitboxIdentity>(out var hitbox)) continue;
+                if (handledNetIds.Contains(hitbox.NetworkId)) continue;
+                if (!TryDamage(hitbox, position, damageHandler)) continue;
+
+                handledNetIds.Add(hitbox.NetworkId);
             }
+            handledNetIds.Clear();
 
             yield return Timing.WaitForSeconds(1f);
             elapsed += 1f;
         }
+        HashSetPool<uint>.Shared.Return(handledNetIds);
+    }
+
+    private static bool TryDamage(HitboxIdentity hitbox, Vector3 damageSource, CustomReasonDamageHandler damageHandler)
+    {
+        if (Physics.Linecast(hitbox.CenterOfMass, damageSource, ThrownProjectile.HitBlockerMask))
+            return false;
+
+        if (!Player.TryGet(hitbox.NetworkId, out var player))
+            return false;
+
+        if (player.IsSCP || !player.IsAlive || player.Team == Team.OtherAlive)
+            return true;
+
+        hitbox.Damage(damageHandler.Damage, damageHandler, damageSource);
+        return true;
     }
 }

@@ -1,5 +1,7 @@
+using CustomRoleLib;
 using CustomRoleLib.API;
 using CustomRoleLib.API.Attributes;
+using CustomRoleLib.API.DefaultComponents;
 using CustomRoleLib.API.DefaultComponents.Generic;
 using PlayerRoles;
 
@@ -10,6 +12,9 @@ namespace Scp066.Features;
 [CustomRoleAttributeBase(typeof(InitializerComponent<Scp066RoleInstance>))]
 [CustomRoleAttributeBase(typeof(Scp066BehaviorComponent))]
 [CustomRoleAttributeBase(typeof(Scp066SchematicComponent))]
+[CustomRoleAttributeBase(typeof(RoleNameDisplayComponent))]
+[CustomRoleAttributeBase(typeof(RoleReceivedHintComponent))]
+[CustomSpawnpointRole<Scp066RoleInstance>(RoleTypeId.Scp096)]
 public class Scp066Role : CustomRoleBase<Scp066RoleInstance>
 {
     public override string Name => "SCP-066";
